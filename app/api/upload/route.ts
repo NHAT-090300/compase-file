@@ -18,13 +18,16 @@ export async function POST(request: NextRequest) {
     const file = formData.get("pdf") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Không có tệp nào được tải lên" },
+        { status: 400 }
+      );
     }
 
     // Validate file type
     if (file.type !== "application/pdf") {
       return NextResponse.json(
-        { error: "Only PDF files are allowed" },
+        { error: "Chỉ cho phép các tệp PDF." },
         { status: 400 }
       );
     }
@@ -33,7 +36,7 @@ export async function POST(request: NextRequest) {
     const maxSize = 100 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File size exceeds 10MB limit" },
+        { error: "Kích thước tệp vượt quá giới hạn 100MB." },
         { status: 400 }
       );
     }
@@ -74,7 +77,7 @@ export async function GET() {
   try {
     if (!fs.existsSync(FILE_PATH) || !fs.existsSync(METADATA_PATH)) {
       return NextResponse.json(
-        { error: "No uploaded file found" },
+        { error: "Không có tệp nào được tải lên" },
         { status: 404 }
       );
     }

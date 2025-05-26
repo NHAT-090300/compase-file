@@ -19,14 +19,14 @@ export async function POST(request: NextRequest) {
 
     if (!fileToCompare) {
       return NextResponse.json(
-        { error: "No file uploaded for comparison" },
+        { error: "Không có tệp nào được tải lên để kiểm tra." },
         { status: 400 }
       );
     }
 
     if (fileToCompare.type !== "application/pdf") {
       return NextResponse.json(
-        { error: "Only PDF files are allowed" },
+        { error: "Chỉ cho phép các tệp PDF." },
         { status: 400 }
       );
     }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const maxSize = 100 * 1024 * 1024;
     if (fileToCompare.size > maxSize) {
       return NextResponse.json(
-        { error: "File size exceeds 10MB limit" },
+        { error: "Kích thước tệp vượt quá giới hạn 100MB." },
         { status: 400 }
       );
     }
