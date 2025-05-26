@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +41,7 @@ export const abi = [
 
 export default function Component() {
   const { writeContract } = useWriteContract();
+  const { isConnected } = useAccount();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
@@ -70,6 +71,14 @@ export default function Component() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setError(null);
+    setUploadResult(null);
+
+    if (!isConnected) {
+      setError("Vui lòng kết nối Ví Web3 để được tiếp tục.");
+      return;
+    }
+
     if (!selectedFile) {
       setError("Vui lòng chọn một tệp tài liệu.");
       return;
@@ -77,8 +86,6 @@ export default function Component() {
 
     try {
       setUploading(true);
-      setError(null);
-      setUploadResult(null);
 
       const formData = new FormData();
 
