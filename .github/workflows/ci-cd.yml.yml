@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /root/project
+            cd /root/project/compase-file
             git pull origin main
             docker compose down
             docker compose up -d --build
