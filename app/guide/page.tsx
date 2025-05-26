@@ -191,6 +191,26 @@ export default function GuidePage() {
                           <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">
+                              Đăng nhập
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              Đăng nhập vào màn hình "phát hành tài liệu" với
+                              tài khoản sau:
+                            </p>
+                            <ul className="text-sm text-gray-600 list-disc pl-5 mt-2">
+                              <li>
+                                <strong>Tên đăng nhập:</strong> risegate.io
+                              </li>
+                              <li>
+                                <strong>Mật khẩu:</strong> risegate@2025
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-gray-900">
                               Chọn tài liệu PDF cần phát hành
                             </p>
                             <p className="text-gray-600 text-sm">

@@ -301,7 +301,7 @@ export default function ComparePage() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">
-                      Nội dung tài liệu:
+                      "Sinh trắc học" của tài liệu:
                     </span>
                     <div className="flex items-center">
                       {comparisonResult.details.hashMatch ? (
