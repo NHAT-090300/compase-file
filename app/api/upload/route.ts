@@ -1,4 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import { mkdir } from "fs/promises";
+import { createHash } from "crypto";
+
+const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+const FILE_PATH = path.join(UPLOAD_DIR, "uploaded.pdf");
+const METADATA_PATH = path.join(UPLOAD_DIR, "metadata.json");
+
+async function generateHashFromBuffer(buffer: Buffer): Promise<string> {
+  return "0x" + createHash("sha256").update(buffer).digest("hex");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,25 +38,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Here you would typically save the file to a storage service
-    // For this example, we'll just return success with file info
-    const fileInfo = {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    await mkdir(UPLOAD_DIR, { recursive: true });
+    fs.writeFileSync(FILE_PATH, buffer);
+
+    // Tạo hash
+    const hash = await generateHashFromBuffer(buffer);
+
+    // Lưu thông tin file
+    const metadata = {
       name: file.name,
       size: file.size,
       type: file.type,
+      hash,
       lastModified: new Date(file.lastModified).toISOString(),
     };
 
-    // Simulate processing time
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    fs.writeFileSync(METADATA_PATH, JSON.stringify(metadata, null, 2));
 
-    return new Response(
-      `File "${file.name}" (${(file.size / 1024 / 1024).toFixed(
-        2
-      )} MB) uploaded successfully!`
-    );
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+
+    return NextResponse.json(metadata);
   } catch (error) {
     console.error("Upload error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    if (!fs.existsSync(FILE_PATH) || !fs.existsSync(METADATA_PATH)) {
+      return NextResponse.json(
+        { error: "No uploaded file found" },
+        { status: 404 }
+      );
+    }
+
+    const metadataRaw = fs.readFileSync(METADATA_PATH, "utf8");
+    const metadata = JSON.parse(metadataRaw);
+
+    return NextResponse.json(metadata);
+  } catch (error) {
+    console.error("GET error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

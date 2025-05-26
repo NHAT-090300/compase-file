@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { useWriteContract } from "wagmi";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,27 +14,80 @@ import {
 } from "@/components/ui/card";
 import { Upload, FileText, CheckCircle } from "lucide-react";
 
+interface FileInfo {
+  name: string;
+  size: number;
+  type: string;
+  hash: string;
+  lastModified: string;
+}
+
+export const abi = [
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_hash",
+        type: "bytes32",
+      },
+    ],
+    name: "write",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const;
+
 export default function Component() {
+  const { writeContract } = useWriteContract();
+
+  const [fileOriginal, setFileOriginal] = useState<FileInfo | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState<string | null>(null);
+  const [uploadResult, setUploadResult] = useState<FileInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedFile) {
+      setError("Please select a document file");
+      return;
+    }
+
     try {
       setUploading(true);
       setError(null);
       setUploadResult(null);
 
+      const formData = new FormData();
+
+      formData.append("pdf", selectedFile);
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
+
       if (response.ok) {
-        const result = await response.text();
+        const result = await response.json();
+        console.log(result);
         setUploadResult(result);
+        writeContract({
+          abi,
+          address: "0x2d6197eB987Fb12DE6dFea2eA7Ca5D7a50b20D09",
+          functionName: "write",
+          args: [result.hash],
+        });
       } else {
         setError("Upload failed. Please try again.");
       }
+
       setUploading(false);
     } catch (error) {
       console.error("Upload error:", error);
@@ -40,6 +95,8 @@ export default function Component() {
       setUploading(false);
     }
   };
+
+  console.log(uploading);
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -64,7 +121,7 @@ export default function Component() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label
                 htmlFor="pdf"
@@ -73,12 +130,14 @@ export default function Component() {
                 Select PDF File
               </label>
               <Input
+                onChange={handleFileChange}
                 id="pdf"
                 name="pdf"
                 type="file"
                 accept="application/pdf"
                 required
                 className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 h-auto"
+                disabled={uploading}
               />
             </div>
             <Button type="submit" disabled={uploading} className="w-full">
@@ -105,7 +164,11 @@ export default function Component() {
                   <h3 className="text-sm font-medium text-green-800">
                     Upload Successful!
                   </h3>
-                  <p className="text-sm text-green-700 mt-1">{uploadResult}</p>
+                  <p className="text-sm text-green-700 mt-1">{`File "${
+                    uploadResult.name
+                  }" (${(uploadResult.size / 1024 / 1024).toFixed(
+                    2
+                  )} MB) uploaded successfully!`}</p>
                 </div>
               </div>
             </div>

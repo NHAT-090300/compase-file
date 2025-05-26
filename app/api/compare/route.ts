@@ -1,52 +1,72 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
+import fs from "fs";
+import path from "path";
 
-async function generateFileHash(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+const FILE_PATH = path.join(UPLOAD_DIR, "uploaded.pdf");
+const METADATA_PATH = path.join(UPLOAD_DIR, "metadata.json");
+
+async function generateHashFromBuffer(buffer: Buffer): Promise<string> {
   return "0x" + createHash("sha256").update(buffer).digest("hex");
 }
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file1 = formData.get("pdf1") as File;
-    const file2 = formData.get("pdf2") as File;
+    const originalHash = formData.get("originalHash");
+    const fileToCompare = formData.get("pdf") as File;
 
-    if (!file1 || !file2) {
+    if (!fileToCompare) {
       return NextResponse.json(
-        { error: "Both PDF files are required" },
+        { error: "No file uploaded for comparison" },
         { status: 400 }
       );
     }
 
-    // Validate file types
-    if (file1.type !== "application/pdf" || file2.type !== "application/pdf") {
+    if (fileToCompare.type !== "application/pdf") {
       return NextResponse.json(
         { error: "Only PDF files are allowed" },
         { status: 400 }
       );
     }
 
-    // Validate file sizes (10MB limit each)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-    if (file1.size > maxSize || file2.size > maxSize) {
+    const maxSize = 10 * 1024 * 1024;
+    if (fileToCompare.size > maxSize) {
       return NextResponse.json(
         { error: "File size exceeds 10MB limit" },
         { status: 400 }
       );
     }
 
-    // Generate hashes for content comparison
-    const [hash1, hash2] = await Promise.all([
-      generateFileHash(file1),
-      generateFileHash(file2),
-    ]);
+    const metadataRaw = fs.readFileSync(METADATA_PATH, "utf8");
+    const metadata = JSON.parse(metadataRaw);
 
-    // Compare files
-    const nameMatch = file1.name === file2.name;
-    const sizeMatch = file1.size === file2.size;
-    const hashMatch = hash1 === hash2;
+    // Đọc file so sánh
+    const compareBuffer = Buffer.from(await fileToCompare.arrayBuffer());
+
+    // Tạo hash
+    const hash2 = await generateHashFromBuffer(compareBuffer);
+
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+
+    // Thông tin file
+    const file1Info = {
+      ...metadata,
+      hash: originalHash,
+    };
+
+    const file2Info = {
+      name: fileToCompare.name,
+      size: fileToCompare.size,
+      hash: hash2,
+    };
+
+    // So sánh
+    const nameMatch = file1Info.name === file2Info.name;
+    const sizeMatch = file1Info.size === file2Info.size;
+
+    const hashMatch = originalHash === file2Info.hash;
     const isMatch = nameMatch && sizeMatch && hashMatch;
 
     const comparisonResult = {
@@ -55,22 +75,14 @@ export async function POST(request: NextRequest) {
         nameMatch,
         sizeMatch,
         hashMatch,
-        file1Info: {
-          name: file1.name,
-          size: file1.size,
-          hash: hash1,
-        },
-        file2Info: {
-          name: file2.name,
-          size: file2.size,
-          hash: hash2,
-        },
+        file1Info,
+        file2Info,
       },
     };
 
     return NextResponse.json(comparisonResult);
   } catch (error) {
-    console.error("Comparison error:", error);
+    console.error("Compare error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

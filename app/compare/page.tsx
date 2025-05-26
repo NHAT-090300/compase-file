@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { useReadContract } from "wagmi";
+// import { parseBytes32String } from "ethers";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,17 +35,82 @@ interface ComparisonResult {
   };
 }
 
+interface FileInfo {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: string;
+}
+
+export const abi = [
+  {
+    inputs: [],
+    name: "read",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
 export default function ComparePage() {
+  const result = useReadContract({
+    abi,
+    address: "0x2d6197eB987Fb12DE6dFea2eA7Ca5D7a50b20D09",
+    functionName: "read",
+  });
+  const originalHash = result.data;
+
+  const [fileOriginal, setFileOriginal] = useState<FileInfo | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [comparing, setComparing] = useState(false);
   const [comparisonResult, setComparisonResult] =
     useState<ComparisonResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
+  const getFileOrigin = async () => {
+    try {
+      setError(null);
+      const res = await fetch("/api/upload");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Could not get file info");
+      } else {
+        setFileOriginal(data);
+      }
+    } catch (err) {
+      setError("Unexpected error while fetching file info");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
+  };
+
+  const handelCompare = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedFile) {
+      setError("Please select a document file");
+      return;
+    }
+
     try {
       setComparing(true);
       setError(null);
       setComparisonResult(null);
+
+      const formData = new FormData();
+      formData.append("pdf", selectedFile);
+      formData.append("originalHash", originalHash);
 
       const response = await fetch("/api/compare", {
         method: "POST",
@@ -62,6 +131,10 @@ export default function ComparePage() {
       setComparing(false);
     }
   };
+
+  useEffect(() => {
+    getFileOrigin();
+  }, []);
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -86,23 +159,50 @@ export default function ComparePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleSubmit} className="space-y-6">
+          <form onSubmit={handelCompare} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label
                   htmlFor="pdf1"
                   className="text-sm font-medium text-gray-700"
                 >
-                  First PDF File
+                  PDF File original
                 </label>
-                <Input
-                  id="pdf1"
-                  name="pdf1"
-                  type="file"
-                  accept="application/pdf"
-                  required
-                  className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 h-auto"
-                />
+                {fileOriginal ? (
+                  <div>
+                    <ul className="text-sm">
+                      <li>
+                        <strong>Name:</strong> {fileOriginal.name}
+                      </li>
+                      <li>
+                        <strong>Size:</strong>{" "}
+                        {(fileOriginal.size / 1024 / 1024).toFixed(2)} MB
+                      </li>
+                      <li>
+                        <strong>Type:</strong> {fileOriginal.type}
+                      </li>
+                      <li>
+                        <strong>Last Modified:</strong>{" "}
+                        {dayjs(fileOriginal.lastModified).format(
+                          "DD/MM/YYYY HH:mm:ss"
+                        )}
+                      </li>
+                      <li>
+                        <strong>Hash: </strong>
+                        {originalHash}
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <Input
+                    id="pdf1"
+                    name="pdf1"
+                    type="file"
+                    accept="application/pdf"
+                    required
+                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 h-auto"
+                  />
+                )}
               </div>
 
               <div className="space-y-2">
@@ -110,9 +210,10 @@ export default function ComparePage() {
                   htmlFor="pdf2"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Second PDF File
+                  PDF File compare
                 </label>
                 <Input
+                  onChange={handleFileChange}
                   id="pdf2"
                   name="pdf2"
                   type="file"
@@ -268,7 +369,7 @@ export default function ComparePage() {
                     <p>
                       <strong>Size:</strong>{" "}
                       {(
-                        comparisonResult.details.file1Info.size /
+                        comparisonResult.details.file1Info?.size /
                         1024 /
                         1024
                       ).toFixed(2)}{" "}
@@ -276,7 +377,10 @@ export default function ComparePage() {
                     </p>
                     <p>
                       <strong>Hash:</strong>{" "}
-                      {comparisonResult.details.file1Info.hash.substring(0, 16)}
+                      {comparisonResult.details.file1Info?.hash.substring(
+                        0,
+                        16
+                      )}
                       ...
                     </p>
                   </div>
