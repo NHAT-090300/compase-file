@@ -140,11 +140,10 @@ export default function ComparePage() {
     <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Compare PDF Files
+          Verify Documents
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Upload two PDF files to compare and check if they are identical or
-          different.
+          Upload your PDF document to verify it on the blockchain.
         </p>
       </div>
 
@@ -152,7 +151,7 @@ export default function ComparePage() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <GitCompare className="h-5 w-5 mr-2" />
-            Compare Two PDF Files
+            Verify Documents
           </CardTitle>
           <CardDescription>
             Select two PDF files to compare their content and properties
@@ -160,7 +159,7 @@ export default function ComparePage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handelCompare} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1  gap-6">
               <div className="space-y-2">
                 <label
                   htmlFor="pdf1"
@@ -168,43 +167,35 @@ export default function ComparePage() {
                 >
                   PDF File original
                 </label>
-                {fileOriginal ? (
-                  <div>
-                    <ul className="text-sm">
-                      <li>
-                        <strong>Name:</strong> {fileOriginal.name}
-                      </li>
-                      <li>
-                        <strong>Size:</strong>{" "}
-                        {(fileOriginal.size / 1024 / 1024).toFixed(2)} MB
-                      </li>
-                      <li>
-                        <strong>Type:</strong> {fileOriginal.type}
-                      </li>
-                      <li>
-                        <strong>Last Modified:</strong>{" "}
-                        {dayjs(fileOriginal.lastModified).format(
-                          "DD/MM/YYYY HH:mm:ss"
-                        )}
-                      </li>
-                      <li>
-                        <strong>Hash: </strong>
-                        {originalHash}
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <Input
-                    id="pdf1"
-                    name="pdf1"
-                    type="file"
-                    accept="application/pdf"
-                    required
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 h-auto"
-                  />
-                )}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  {fileOriginal && (
+                    <div>
+                      <ul className="text-sm">
+                        <li>
+                          <strong>Name:</strong> {fileOriginal.name}
+                        </li>
+                        <li>
+                          <strong>Size:</strong>{" "}
+                          {(fileOriginal.size / 1024 / 1024).toFixed(2)} MB
+                        </li>
+                        <li>
+                          <strong>Type:</strong> {fileOriginal.type}
+                        </li>
+                        <li>
+                          <strong>Last Modified:</strong>{" "}
+                          {dayjs(fileOriginal.lastModified).format(
+                            "DD/MM/YYYY HH:mm:ss"
+                          )}
+                        </li>
+                        <li>
+                          <strong>Hash: </strong>
+                          {originalHash}
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
-
               <div className="space-y-2">
                 <label
                   htmlFor="pdf2"
@@ -223,7 +214,6 @@ export default function ComparePage() {
                 />
               </div>
             </div>
-
             <Button type="submit" disabled={comparing} className="w-full">
               {comparing ? (
                 <>
@@ -233,12 +223,11 @@ export default function ComparePage() {
               ) : (
                 <>
                   <GitCompare className="h-4 w-4 mr-2" />
-                  Compare PDFs
+                  Verify Documents
                 </>
               )}
             </Button>
           </form>
-
           {/* Comparison Result */}
           {comparisonResult && (
             <div className="mt-6 space-y-4">

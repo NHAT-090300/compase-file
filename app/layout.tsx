@@ -5,6 +5,7 @@ import "./globals.css";
 import { WagmiProviders } from "@/components/providers/wagmi-provider";
 import { ConnectWallet } from "@/components/wallet/connect-wallet";
 import Image from "next/image";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,18 +41,18 @@ export default function RootLayout({
                     </h1>
                   </div>
                   <nav className="flex items-center space-x-8">
-                    <a
+                    <Link
                       href="/"
                       className="text-gray-500 hover:text-gray-900 transition-colors"
                     >
-                      Home
-                    </a>
-                    <a
+                      Upload
+                    </Link>
+                    <Link
                       href="/compare"
                       className="text-gray-500 hover:text-gray-900 transition-colors"
                     >
-                      Compare PDFs
-                    </a>
+                      Verify Documents
+                    </Link>
                     <ConnectWallet />
                   </nav>
                 </div>

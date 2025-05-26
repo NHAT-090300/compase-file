@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const maxSize = 10 * 1024 * 1024;
+    const maxSize = 100 * 1024 * 1024;
     if (fileToCompare.size > maxSize) {
       return NextResponse.json(
         { error: "File size exceeds 10MB limit" },

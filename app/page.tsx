@@ -117,7 +117,7 @@ export default function Component() {
             Upload PDF File
           </CardTitle>
           <CardDescription>
-            Choose a PDF file to upload. Maximum file size: 10MB
+            Choose a PDF file to upload. Maximum file size: 100MB
           </CardDescription>
         </CardHeader>
         <CardContent>
