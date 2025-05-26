@@ -64,16 +64,14 @@ export async function POST(request: NextRequest) {
 
     // So sánh
     const nameMatch = file1Info.name === file2Info.name;
-    const sizeMatch = file1Info.size === file2Info.size;
 
     const hashMatch = originalHash === file2Info.hash;
-    const isMatch = nameMatch && sizeMatch && hashMatch;
+    const isMatch = nameMatch && hashMatch;
 
     const comparisonResult = {
       isMatch,
       details: {
         nameMatch,
-        sizeMatch,
         hashMatch,
         file1Info,
         file2Info,

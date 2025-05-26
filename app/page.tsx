@@ -20,7 +20,6 @@ interface ComparisonResult {
   isMatch: boolean;
   details: {
     nameMatch: boolean;
-    sizeMatch: boolean;
     hashMatch: boolean;
     file1Info: {
       name: string;
@@ -294,30 +293,6 @@ export default function ComparePage() {
                         }`}
                       >
                         {comparisonResult.details.nameMatch
-                          ? "Khớp"
-                          : "Không khớp"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      Kích thước tài liệu:
-                    </span>
-                    <div className="flex items-center">
-                      {comparisonResult.details.sizeMatch ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <XCircle className="h-4 w-4 text-red-600" />
-                      )}
-                      <span
-                        className={`ml-2 text-sm ${
-                          comparisonResult.details.sizeMatch
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {comparisonResult.details.sizeMatch
                           ? "Khớp"
                           : "Không khớp"}
                       </span>

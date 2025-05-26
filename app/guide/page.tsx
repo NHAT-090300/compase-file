@@ -265,12 +265,6 @@ export default function GuidePage() {
                         </div>
                       </div>
                     )}
-
-                    {index < steps.length - 1 && (
-                      <div className="flex justify-end mt-6">
-                        <ArrowRight className="h-6 w-6 text-gray-400" />
-                      </div>
-                    )}
                   </div>
                 </div>
               </CardContent>
