@@ -6,6 +6,9 @@ import { WagmiProviders } from "@/components/providers/wagmi-provider";
 import { ConnectWallet } from "@/components/wallet/connect-wallet";
 import Image from "next/image";
 import Link from "next/link";
+import NavLink from "@/components/custom/nav-link";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -52,76 +55,10 @@ export default function RootLayout({
         <WagmiProviders>
           <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <header className="bg-white shadow-sm border-b">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center py-6">
-                  <div className="flex items-center gap-2">
-                    <Image
-                      width={48}
-                      height={48}
-                      src="/logo-danang.png"
-                      alt="logo"
-                    />
-                    <h1 className="text-2xl font-bold text-gray-900 ml-2">
-                      Sở Khoa học và Công nghệ TP Đà Nẵng
-                    </h1>
-                  </div>
-                  <nav className="flex items-center space-x-8">
-                    <Link
-                      href="/"
-                      className="text-gray-500 hover:text-gray-900 transition-colors"
-                    >
-                      Phát hành tài liệu
-                    </Link>
-                    <Link
-                      href="/compare"
-                      className="text-gray-500 hover:text-gray-900 transition-colors"
-                    >
-                      Xác thực tài liệu
-                    </Link>
-                    <Link
-                      href="/guide"
-                      className="text-gray-500 hover:text-gray-900 transition-colors"
-                    >
-                      Hướng dẫn
-                    </Link>
-                    <ConnectWallet />
-                  </nav>
-                </div>
-              </div>
-            </header>
+            <Header />
             {children}
             {/* Footer */}
-            <footer className="bg-white border-t">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex items-center gap-4">
-                  <a href="https://risegate.vn/" target="_blank">
-                    <img
-                      className="cursor-pointer h-8"
-                      src="/logo_risegate.svg"
-                      alt="risegate"
-                    />
-                  </a>
-                  <b className="text-red-600">Phiên bả thử nghiệm</b>
-                  <div className="typography-h6 flex-1 text-right">
-                    <span className="text-[#9EA3AE] font-medium">
-                      Powered by{" "}
-                    </span>{" "}
-                    <a href="https://metadap.io/" target="_blank">
-                      <b className="text-[#4D5461]">MetaDAP</b>
-                    </a>
-                  </div>
-                  <div className="typography-h6">
-                    <span className="text-[#9EA3AE] font-medium">
-                      Powered by{" "}
-                    </span>
-                    <a href="https://risegate.vn/" target="_blank">
-                      <b className="text-[#4D5461]">RiseGate</b>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </footer>
+            <Footer />
           </div>
         </WagmiProviders>
       </body>
