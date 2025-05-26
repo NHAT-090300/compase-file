@@ -4,16 +4,16 @@ import { coinbaseWallet, injected } from "wagmi/connectors";
 import { type Chain } from "viem";
 
 export const testnet = {
-  id: 1,
-  name: "MetaDAP Enterprise Testnet",
+  id: 89359,
+  name: "MetaDAP Enterprise Moonnet",
   nativeCurrency: { name: "DAP", symbol: "DAP", decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://rpc.testnet.chain.metadap.io"] },
+    default: { http: ["https://rpc.moonnet.chain.metadap.io"] },
   },
   blockExplorers: {
     default: {
-      name: "MetaDAP Enterprise Testnet Explorer",
-      url: "https://explorer.testnet.chain.metadap.io",
+      name: "MetaDAP Enterprise Moonnet Explorer",
+      url: "https://explorer.moonnet.chain.metadap.io",
     },
   },
 } as const satisfies Chain;
