@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CheckCircle, FileText, Upload } from "lucide-react";
 import { If } from "@/components/custom/condition";
+import { createHash } from "crypto";
 
 interface FileInfo {
   name: string;
@@ -40,7 +41,7 @@ export const abi = [
 ] as const;
 
 export default function Component() {
-  const { writeContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
   const { isConnected } = useAccount();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,6 +56,7 @@ export default function Component() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (username === "risegate.io" && password === "risegate@2025") {
       setIsAuthenticated(true);
       setLoginError("");
@@ -62,6 +64,18 @@ export default function Component() {
       setLoginError("Sai tên đăng nhập hoặc mật khẩu");
     }
   };
+
+  async function generateHashFromArrayBuffer(
+    buffer: ArrayBuffer
+  ): Promise<`0x${string}`> {
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    return `0x${hashHex}`;
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -87,8 +101,17 @@ export default function Component() {
     try {
       setUploading(true);
 
-      const formData = new FormData();
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const hash = await generateHashFromArrayBuffer(arrayBuffer);
 
+      await writeContractAsync({
+        abi,
+        address: "0x2d6197eB987Fb12DE6dFea2eA7Ca5D7a50b20D09",
+        functionName: "write",
+        args: [hash],
+      });
+
+      const formData = new FormData();
       formData.append("pdf", selectedFile);
 
       const response = await fetch("/api/upload", {
@@ -98,14 +121,7 @@ export default function Component() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
         setUploadResult(result);
-        writeContract({
-          abi,
-          address: "0x2d6197eB987Fb12DE6dFea2eA7Ca5D7a50b20D09",
-          functionName: "write",
-          args: [result.hash],
-        });
       } else {
         setError("Tải lên thất bại. Vui lòng thử lại.");
       }
