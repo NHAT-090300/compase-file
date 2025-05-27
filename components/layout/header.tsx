@@ -1,16 +1,16 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import Router from "next/router";
+
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTrigger,
-  SheetClose,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
 } from "@/components/ui/sheet";
+
 import NavLink from "../custom/nav-link";
 import { ConnectWallet } from "../wallet/connect-wallet";
 
@@ -20,7 +20,10 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-3 lg:py-6">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-2"
+            onClick={() => Router.push("/")}
+          >
             <Image width={48} height={48} src="/logo-danang.png" alt="logo" />
             <h1 className="hidden md:block text-lg xl:text-2xl font-bold text-gray-900 ml-2">
               Sở Khoa học và Công nghệ TP Đà Nẵng

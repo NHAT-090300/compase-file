@@ -131,12 +131,15 @@ export default function GuidePage() {
                               </li>
                               <li>
                                 <strong>Network URL:</strong>
-                                https://rpc.moonnet.chain.metadap.io
+                                <span className="break-all">
+                                  https://rpc.moonnet.chain.metadap.io
+                                </span>
                               </li>
-
                               <li>
                                 <strong>Block explorer URL:</strong>
-                                https://explorer.moonnet.chain.metadap.io
+                                <span className="break-all">
+                                  https://explorer.moonnet.chain.metadap.io
+                                </span>
                               </li>
                             </ul>
                             <p className="text-sm mt-2 text-red-500">
