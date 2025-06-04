@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 
 export function useAuth() {
   function login(username: string, password: string): boolean {
-    if (username === "admin" && password === "admin") {
+    if (username === "risegate.io" && password === "risegate@2025") {
       Cookies.set("auth", "true", { expires: 7 / 24 }); // 7h
       return true;
     }
