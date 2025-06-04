@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 
+import { If } from "@/components/custom/condition";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, FileText, Upload } from "lucide-react";
-import { If } from "@/components/custom/condition";
-import { createHash } from "crypto";
 
 interface FileInfo {
   name: string;

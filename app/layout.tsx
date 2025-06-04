@@ -1,14 +1,14 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import "./globals.css";
-import { WagmiProviders } from "@/components/providers/wagmi-provider";
-import { ConnectWallet } from "@/components/wallet/connect-wallet";
-import Image from "next/image";
-import Link from "next/link";
-import NavLink from "@/components/custom/nav-link";
-import Header from "@/components/layout/header";
+import { Toaster } from "react-hot-toast";
+
 import Footer from "@/components/layout/footer";
+import Header from "@/components/layout/header";
+import { ModalProvider } from "@/components/modals/modal-provider";
+import { WagmiProviders } from "@/components/providers/wagmi-provider";
+
+import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -52,14 +52,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={plusJakarta.className} suppressHydrationWarning>
+        <Toaster />
         <WagmiProviders>
-          <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <Header />
-            {children}
-            {/* Footer */}
-            <Footer />
-          </div>
+          <ModalProvider>
+            <div className="min-h-screen bg-gray-50">
+              <Header />
+              {children}
+              <Footer />
+            </div>
+          </ModalProvider>
         </WagmiProviders>
       </body>
     </html>
