@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { documentAbi } from "@/lib/abi";
 import { generateHashFromFile, splitText } from "@/lib/utils";
-import { config } from "@/lib/wagmi";
+import { config, documentWalletAddress } from "@/lib/wagmi";
 import { waitForTransaction, writeContract } from "@wagmi/core";
 import { CheckCircle, Edit, File, Upload, X } from "lucide-react";
 import { useGlobalModal } from "./modal-provider";
@@ -38,7 +38,7 @@ export const UpdateModal = ({ onSuccess, document }: Props) => {
   };
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+    setName(() => e.target.value);
   };
 
   const handleUpload = async () => {
@@ -55,13 +55,18 @@ export const UpdateModal = ({ onSuccess, document }: Props) => {
       return;
     }
 
-    if (!selectedFile) {
+    if (name.length > 150) {
+      setError("Vui lòng nhập tên hồ sơ dưới 150 ký tự.");
+      return;
+    }
+
+    if (editedFile && !selectedFile) {
       setError("Vui lòng chọn một tệp tài liệu.");
       return;
     }
 
     const maxSize = 100 * 1024 * 1024;
-    if (selectedFile.size > maxSize) {
+    if (editedFile && selectedFile && selectedFile.size > maxSize) {
       setError("Kích thước tệp vượt quá giới hạn 100MB.");
       return;
     }
@@ -69,18 +74,20 @@ export const UpdateModal = ({ onSuccess, document }: Props) => {
     try {
       setUploading(true);
 
-      const documentHash = await generateHashFromFile(selectedFile);
+      const documentName = document.name === name ? "" : name;
+      const documentFileName = selectedFile ? selectedFile.name : "";
+      const documentHash = selectedFile
+        ? await generateHashFromFile(selectedFile)
+        : "0x0000000000000000000000000000000000000000000000000000000000000000";
 
       const hash = await writeContract(config, {
         abi: documentAbi,
-        address: "0xfc27D9F25F5433068B00624808b15B8b5D449508",
+        address: documentWalletAddress,
         functionName: "update",
         args: [
-          document.name === name ? "" : name,
-          document.fileName === selectedFile.name ? "" : selectedFile.name,
-          document.name === documentHash
-            ? "0x00000000000000000000000000000000"
-            : documentHash,
+          documentName,
+          documentFileName,
+          documentHash,
           Number(document.id),
         ],
       });
@@ -210,15 +217,14 @@ export const UpdateModal = ({ onSuccess, document }: Props) => {
         </div>
       )}
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" onClick={closeModal}>
+        <Button disabled={uploading} variant="outline" onClick={closeModal}>
           Đóng
         </Button>
+
         <Button
-          type="submit"
           disabled={
             uploading ||
-            !editedFile ||
-            (document.name === name && !selectedFile)
+            (!editedFile && document.name === name && !selectedFile)
           }
           onClick={handleUpload}
         >

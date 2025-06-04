@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { documentAbi } from "@/lib/abi";
 import { generateHashFromFile } from "@/lib/utils";
-import { config } from "@/lib/wagmi";
+import { config, documentWalletAddress } from "@/lib/wagmi";
 import { waitForTransaction, writeContract } from "@wagmi/core";
 import { CheckCircle, Upload } from "lucide-react";
 import { useGlobalModal } from "./modal-provider";
@@ -51,6 +51,11 @@ export const UploadModal = ({ onSuccess }: Props) => {
       return;
     }
 
+    if (name.length > 150) {
+      setError("Vui lòng nhập tên hồ sơ dưới 150 ký tự.");
+      return;
+    }
+
     if (!selectedFile) {
       setError("Vui lòng chọn một tệp tài liệu.");
       return;
@@ -69,7 +74,7 @@ export const UploadModal = ({ onSuccess }: Props) => {
 
       const hash = await writeContract(config, {
         abi: documentAbi,
-        address: "0xfc27D9F25F5433068B00624808b15B8b5D449508",
+        address: documentWalletAddress,
         functionName: "write",
         args: [name, selectedFile.name, documentHash],
       });
@@ -157,7 +162,7 @@ export const UploadModal = ({ onSuccess }: Props) => {
         </div>
       )}
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" onClick={closeModal}>
+        <Button disabled={uploading} variant="outline" onClick={closeModal}>
           Đóng
         </Button>
         <Button type="submit" disabled={uploading} onClick={handleUpload}>

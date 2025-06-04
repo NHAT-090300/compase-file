@@ -37,3 +37,6 @@ declare module "wagmi" {
     config: typeof config;
   }
 }
+
+export const documentWalletAddress =
+  "0x7D6aB95Af1a26f6a98a353c04393F0C97DdD66bF";

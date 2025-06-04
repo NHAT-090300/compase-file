@@ -4,4 +4,5 @@ export interface IDocument {
   name: string;
   owner: string;
   documentHash: string;
+  status: boolean;
 }

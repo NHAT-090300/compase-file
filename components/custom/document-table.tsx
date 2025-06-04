@@ -24,9 +24,9 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { documentAbi } from "@/lib/abi";
 import { splitText } from "@/lib/utils";
-import { config } from "@/lib/wagmi";
+import { config, documentWalletAddress } from "@/lib/wagmi";
 import { IDocument } from "@/types/document";
-import { isNumber } from "lodash";
+import { isArray, isNumber } from "lodash";
 import { useAccount } from "wagmi";
 import { LoginModal } from "../modals/login-modal";
 import { useGlobalModal } from "../modals/modal-provider";
@@ -34,6 +34,7 @@ import { UpdateModal } from "../modals/update-modal";
 import { UploadModal } from "../modals/upload-modal";
 import { VerifyModal } from "../modals/verify-modal";
 import { If } from "./condition";
+import { DeleteModal } from "../modals/delete-modal";
 
 const itemsPerPage = 10;
 
@@ -46,12 +47,20 @@ export function DocumentTable() {
   const [data, setData] = React.useState<IDocument[]>([]);
   const { openModal } = useGlobalModal();
 
+  const handleDelete = async (document: IDocument) => {
+    openModal({
+      title: "Xóa tài liệu",
+      description: "Nếu bạn muốn xóa nhấn xác nhận, không thì quay lại",
+      body: <DeleteModal document={document} onSuccess={getDocuments} />,
+    });
+  };
+
   const handleUpdate = async (document: IDocument) => {
     openModal({
       title: "Cập nhập tài liệu",
       description:
         " Chọn một tệp PDF để tải lên. Kích thước tệp tối đa: 100MB.",
-      body: <UpdateModal document={document} onSuccess={fetchDocuments} />,
+      body: <UpdateModal document={document} onSuccess={getDocuments} />,
     });
   };
 
@@ -68,19 +77,32 @@ export function DocumentTable() {
     {
       accessorKey: "name",
       header: "Tên hồ sơ",
-      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+      cell: ({ row }) => (
+        <div className="line-clamp-2 max-w-64">{row.getValue("name")}</div>
+      ),
     },
     {
       accessorKey: "fileName",
       header: "Tên file",
-      cell: ({ row }) => <div>{row.getValue("fileName")}</div>,
+      cell: ({ row }) => (
+        <div className="line-clamp-2 max-w-62">{row.getValue("fileName")}</div>
+      ),
     },
     {
       accessorKey: "documentHash",
-      header: "Hash",
+      header: '"Sinh trắc học" của tài liệu',
       cell: ({ row }) => (
-        <div className="capitalize">
-          {splitText(row.getValue("documentHash"), 5)}
+        <div className="capitalize w-52">
+          {splitText(row.getValue("documentHash"), 3)}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "owner",
+      header: "Địa chỉ ví người sở hữu",
+      cell: ({ row }) => (
+        <div className="capitalize w-52">
+          {splitText(row.getValue("owner"), 3)}
         </div>
       ),
     },
@@ -98,12 +120,20 @@ export function DocumentTable() {
                 address?.toLowerCase() === document.owner?.toLowerCase()
               }
               Then={
-                <Button
-                  onClick={() => handleUpdate(document)}
-                  variant="outline"
-                >
-                  Cập nhập
-                </Button>
+                <>
+                  <Button
+                    onClick={() => handleUpdate(document)}
+                    variant="outline"
+                  >
+                    Cập nhập
+                  </Button>
+                  <Button
+                    onClick={() => handleDelete(document)}
+                    variant="outline"
+                  >
+                    Xóa
+                  </Button>
+                </>
               }
             />
             <Button onClick={() => handleVerify(document)} variant="outline">
@@ -133,10 +163,10 @@ export function DocumentTable() {
           <LoginModal
             onSuccess={() => {
               openModal({
-                title: " Tải tài liệu PDF",
+                title: "Tải tài liệu PDF",
                 description:
                   "Chọn một tệp PDF để tải lên. Kích thước tệp tối đa: 100MB.",
-                body: <UploadModal onSuccess={fetchDocuments} />,
+                body: <UploadModal onSuccess={getDocuments} />,
               });
             }}
           />
@@ -148,7 +178,7 @@ export function DocumentTable() {
     openModal({
       title: " Tải tài liệu PDF",
       description: "Chọn một tệp PDF để tải lên. Kích thước tệp tối đa: 100MB.",
-      body: <UploadModal onSuccess={fetchDocuments} />,
+      body: <UploadModal onSuccess={getDocuments} />,
     });
   };
 
@@ -156,51 +186,42 @@ export function DocumentTable() {
     try {
       const result = await readContract(config, {
         abi: documentAbi,
-        address: "0xfc27D9F25F5433068B00624808b15B8b5D449508",
+        address: documentWalletAddress,
         functionName: "read",
         args: [id],
       });
 
       const file = result as IDocument;
+
       return { ...file, id };
     } catch (error) {
       return null;
     }
   };
 
-  const getDocuments = async (currentPage: number, totalDocument: number) => {
+  const getDocuments = async (currentPage = 1) => {
+    setLoading(true);
     try {
-      const startId = (currentPage - 1) * itemsPerPage + 1;
-      const endId = Math.min(startId + itemsPerPage - 1, totalDocument);
+      const response = (await readContract(config, {
+        abi: documentAbi,
+        address: documentWalletAddress,
+        functionName: "getPagination",
+        args: [currentPage, itemsPerPage],
+      })) as [number[], number];
 
-      const ids = Array.from(
-        { length: endId - startId + 1 },
-        (_, i) => startId + i
-      );
+      const ids = isArray(response?.[0]) ? response[0] : [];
+      const total = response?.[1] ? Number(response[1]) : 0;
 
-      const promises = ids.map(getDocument);
+      setPage(currentPage);
+      setTotalData(isNumber(total) ? total : 0);
+
+      const promises = ids.map((id) => getDocument(Number(id)));
       const result = await Promise.all(promises);
       const documents = result.filter((item) => item !== null);
       setData(documents);
     } catch (error) {
-      setData([]);
-    }
-  };
-
-  const fetchDocuments = async () => {
-    setLoading(true);
-    try {
-      const result = await readContract(config, {
-        abi: documentAbi,
-        address: "0xfc27D9F25F5433068B00624808b15B8b5D449508",
-        functionName: "getTotalSlot",
-      });
-
-      const totalDocument = isNumber(Number(result)) ? Number(result) : 0;
-      setTotalData(totalDocument);
       setPage(1);
-      getDocuments(1, totalDocument);
-    } catch (error) {
+      setData([]);
       setTotalData(0);
     } finally {
       setLoading(false);
@@ -212,16 +233,16 @@ export function DocumentTable() {
   const handlePrev = () => {
     const newPage = Math.max(1, page - 1);
     setPage(newPage);
-    getDocuments(newPage, totalData);
+    getDocuments(newPage);
   };
   const handleNext = () => {
     const newPage = Math.min(totalPages, page + 1);
     setPage(newPage);
-    getDocuments(newPage, totalData);
+    getDocuments(newPage);
   };
 
   React.useEffect(() => {
-    fetchDocuments();
+    getDocuments();
   }, []);
 
   return (

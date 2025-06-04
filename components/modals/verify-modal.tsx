@@ -61,7 +61,7 @@ export const VerifyModal = ({ document }: Props) => {
         details: {
           nameMatch,
           hashMatch,
-          file1Info: { name: document.name, hash: document.documentHash },
+          file1Info: { name: document.fileName, hash: document.documentHash },
           file2Info: { name: selectedFile.name, hash },
         },
       });

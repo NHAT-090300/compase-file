@@ -25,6 +25,24 @@ export const documentAbi = [
   {
     inputs: [
       {
+        internalType: "bool",
+        name: "stt",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "changeStatus",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "string",
         name: "_name",
         type: "string",
@@ -168,6 +186,35 @@ export const documentAbi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "page",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "limit",
+        type: "uint256",
+      },
+    ],
+    name: "getPagination",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getTotalSlot",
     outputs: [
@@ -211,6 +258,11 @@ export const documentAbi = [
             internalType: "address",
             name: "owner",
             type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "status",
+            type: "bool",
           },
         ],
         internalType: "struct hashStorage.document",
