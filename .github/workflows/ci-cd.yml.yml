@@ -22,5 +22,7 @@ jobs:
           script: |
             cd /root/project/compase-file
             git pull origin main
+            docker system prune -af  
+            docker volume prune -f   
             docker compose down
             docker compose up -d --build
