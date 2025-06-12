@@ -1,14 +1,14 @@
-import type React from "react";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import type React from "react";
 import { Toaster } from "react-hot-toast";
 
-import Footer from "@/components/layout/footer";
-import Header from "@/components/layout/header";
 import { ModalProvider } from "@/components/modals/modal-provider";
 import { WagmiProviders } from "@/components/providers/wagmi-provider";
 
+import { MainLayout } from "@/components/layout/main-layout";
 import "./globals.css";
+import { AuthProvider } from "@/context/auth-context";
 
 const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -52,16 +52,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={plusJakarta.className} suppressHydrationWarning>
-        <Toaster />
-        <WagmiProviders>
-          <ModalProvider>
-            <div className="min-h-screen bg-gray-50">
-              <Header />
-              {children}
-              <Footer />
-            </div>
-          </ModalProvider>
-        </WagmiProviders>
+        <AuthProvider>
+          <Toaster />
+          <WagmiProviders>
+            <ModalProvider>
+              <MainLayout>{children}</MainLayout>
+            </ModalProvider>
+          </WagmiProviders>
+        </AuthProvider>
       </body>
     </html>
   );

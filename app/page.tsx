@@ -1,10 +1,11 @@
 "use client";
 
-import { DocumentTable } from "@/components/custom/document-table";
+import { VerifyPage } from "@/components/container/verify-page";
+import { VerifyDocument } from "@/components/custom/verify-document";
 
 export default function ComparePage() {
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-6">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           Xác thực tài liệu
@@ -14,7 +15,9 @@ export default function ComparePage() {
         </p>
       </div>
 
-      <DocumentTable />
+      {/* <DocumentTable /> */}
+
+      <VerifyPage />
     </main>
   );
 }

@@ -4,27 +4,27 @@ import { useState } from "react";
 import { useGlobalModal } from "./modal-provider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/context/auth-context";
 
 interface Props {
   onSuccess: () => void;
 }
 
 export const LoginModal = ({ onSuccess }: Props) => {
-  const { login } = useAuth();
+  // const { login } = useAuth();
   const { closeModal } = useGlobalModal();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
-    const success = login(username, password);
-    if (success) {
-      closeModal();
-      onSuccess();
-    } else {
-      setError("Sai tài khoản hoặc mật khẩu");
-    }
+    // const success = login(username, password);
+    // if (success) {
+    //   closeModal();
+    //   onSuccess();
+    // } else {
+    //   setError("Sai tài khoản hoặc mật khẩu");
+    // }
   };
 
   return (

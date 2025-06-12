@@ -23,3 +23,9 @@ export async function generateHashFromFile(file: File): Promise<`0x${string}`> {
 
   return `0x${hashHex}`;
 }
+
+export async function generateHashFromMultipleFile(
+  files: File[]
+): Promise<`0x${string}`[]> {
+  return Promise.all(files.map((file) => generateHashFromFile(file)));
+}

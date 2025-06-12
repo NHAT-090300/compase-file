@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import NavLink from "../custom/nav-link";
+import NavLink from "./nav-link";
 import { ConnectWallet } from "../wallet/connect-wallet";
 import Link from "next/link";
 
@@ -29,8 +29,8 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {/* <NavLink href="/">Xác thực tài liệu</NavLink>
-            <NavLink href="/upload">Phát hành tài liệu</NavLink> */}
+            <NavLink href="/">Xác thực tài liệu</NavLink>
+            <NavLink href="/upload">Phát hành tài liệu</NavLink>
             <NavLink href="/guide">Hướng dẫn</NavLink>
             <ConnectWallet />
           </nav>
@@ -43,12 +43,12 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-64 sm:w-80">
                 <div className="mt-6 space-y-4 grid grid-cols-1 gap-4">
-                  {/* <SheetClose asChild>
+                  <SheetClose asChild>
                     <NavLink href="/">Xác thực tài liệu</NavLink>
                   </SheetClose>
                   <SheetClose asChild>
                     <NavLink href="/upload">Phát hành tài liệu</NavLink>
-                  </SheetClose> */}
+                  </SheetClose>
                   <SheetClose asChild>
                     <NavLink href="/guide">Hướng dẫn</NavLink>
                   </SheetClose>

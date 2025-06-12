@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
 import { documentAbi } from "@/lib/abi";
 import { config, documentWalletAddress } from "@/lib/wagmi";
 import { IDocument } from "@/types/document";

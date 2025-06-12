@@ -41,6 +41,18 @@ export const documentAbi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "clearHistory",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
     inputs: [
       {
         internalType: "string",
@@ -154,6 +166,19 @@ export const documentAbi = [
     type: "event",
   },
   {
+    inputs: [],
+    name: "contractOwner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -167,6 +192,25 @@ export const documentAbi = [
         internalType: "bytes32[]",
         name: "",
         type: "bytes32[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "hash",
+        type: "bytes32",
+      },
+    ],
+    name: "getIdByHash",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",
@@ -196,6 +240,11 @@ export const documentAbi = [
         internalType: "uint256",
         name: "limit",
         type: "uint256",
+      },
+      {
+        internalType: "uint256[]",
+        name: "searchList",
+        type: "uint256[]",
       },
     ],
     name: "getPagination",

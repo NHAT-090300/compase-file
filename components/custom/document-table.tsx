@@ -21,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/hooks/use-auth";
 import { documentAbi } from "@/lib/abi";
 import { splitText } from "@/lib/utils";
 import { config, documentWalletAddress } from "@/lib/wagmi";
@@ -35,12 +34,13 @@ import { UploadModal } from "../modals/upload-modal";
 import { VerifyModal } from "../modals/verify-modal";
 import { If } from "./condition";
 import { DeleteModal } from "../modals/delete-modal";
+import { useAuth } from "@/context/auth-context";
 
 const itemsPerPage = 10;
 
 export function DocumentTable() {
   const { address } = useAccount();
-  const { isLoggedIn } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = React.useState(true);
   const [totalData, setTotalData] = React.useState(0);
   const [page, setPage] = React.useState(1);
@@ -78,7 +78,9 @@ export function DocumentTable() {
       accessorKey: "name",
       header: "Tên hồ sơ",
       cell: ({ row }) => (
-        <div className="line-clamp-2 max-w-64">{row.getValue("name")}</div>
+        <div className="line-clamp-2 max-w-64 min-w-32">
+          {row.getValue("name")}
+        </div>
       ),
     },
     {
@@ -92,16 +94,16 @@ export function DocumentTable() {
       accessorKey: "documentHash",
       header: '"Sinh trắc học" của tài liệu',
       cell: ({ row }) => (
-        <div className="capitalize w-52">
+        <div className="capitalize w-44">
           {splitText(row.getValue("documentHash"), 3)}
         </div>
       ),
     },
     {
       accessorKey: "owner",
-      header: "Địa chỉ ví người sở hữu",
+      header: "Địa chỉ ví người phát hành",
       cell: ({ row }) => (
-        <div className="capitalize w-52">
+        <div className="capitalize w-44">
           {splitText(row.getValue("owner"), 3)}
         </div>
       ),
@@ -136,9 +138,9 @@ export function DocumentTable() {
                 </>
               }
             />
-            <Button onClick={() => handleVerify(document)} variant="outline">
+            {/* <Button onClick={() => handleVerify(document)} variant="outline">
               Xác thực
-            </Button>
+            </Button> */}
           </div>
         );
       },
@@ -155,7 +157,7 @@ export function DocumentTable() {
   });
 
   const handleUpload = () => {
-    if (!isLoggedIn) {
+    if (!user) {
       openModal({
         title: "Yêu cầu đăng nhập",
         description: "Vui lòng đăng nhập để tiếp tục.",
@@ -202,11 +204,12 @@ export function DocumentTable() {
   const getDocuments = async (currentPage = 1) => {
     setLoading(true);
     try {
+      console.log("getPagination");
       const response = (await readContract(config, {
         abi: documentAbi,
         address: documentWalletAddress,
         functionName: "getPagination",
-        args: [currentPage, itemsPerPage],
+        args: [currentPage, itemsPerPage, []],
       })) as [number[], number];
 
       const ids = isArray(response?.[0]) ? response[0] : [];
@@ -247,15 +250,15 @@ export function DocumentTable() {
 
   return (
     <div className="w-full">
-      <div className="flex gap-2 py-4 justify-end">
-        {/* <div className="flex-1 flex items-center gap-2">
+      {/* <div className="flex gap-2 py-4 justify-end">
+        <div className="flex-1 flex items-center gap-2">
           <Button variant="default">Tất cả</Button>
           <Button variant="outline">Của tôi</Button>
-        </div> */}
+        </div>
         <Button onClick={handleUpload} variant="outline">
           Phát hành tài liệu
         </Button>
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

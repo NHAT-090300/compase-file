@@ -39,4 +39,4 @@ declare module "wagmi" {
 }
 
 export const documentWalletAddress =
-  "0x7D6aB95Af1a26f6a98a353c04393F0C97DdD66bF";
+  "0x8334Ab6247785AD39EdE8B8fA770f003Df800F0b";
