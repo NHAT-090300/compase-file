@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return baseApi<{ userId: string; email: string; otpType: string }>({
       url: AuthApi.urlPreLogin,
       method: "POST",
-      data: { ...data, system: "identity" },
+      data: { ...data, system: "verify_document" },
     });
   }
 
@@ -147,6 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       Cookies.set("user_id", response.userId);
 
       const data = await getMe();
+
       setUser(data);
       toast.success("Đăng nhập thành công");
     } catch (error: any) {

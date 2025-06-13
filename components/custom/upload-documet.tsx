@@ -1,4 +1,4 @@
-import { CheckCircle, File, FileText, Trash2, Upload } from "lucide-react";
+import { CheckCircle, File, Trash2, Upload } from "lucide-react";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -9,18 +9,13 @@ import { FileItem } from "@/types/file";
 import { waitForTransaction, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import { Input } from "../ui/input";
 import { FileUpload } from "./file-upload";
+import { useAuth } from "@/context/auth-context";
 
 export const UploadDocument = () => {
   const { isConnected } = useAccount();
+  const { user } = useAuth();
 
   const [files, setFiles] = useState<FileItem[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
@@ -33,6 +28,12 @@ export const UploadDocument = () => {
   };
 
   const handleUpload = async () => {
+    if (!user?.role?.permissions?.includes("write_verify_document")) {
+      toast.error("Bạn không đủ quyền để thực hiện");
+      setError("Bạn không đủ quyền để thực hiện");
+      return;
+    }
+
     if (uploading) return;
 
     setError(null);
