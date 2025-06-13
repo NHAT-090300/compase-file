@@ -198,27 +198,27 @@ export default function GuidePage() {
                             </p>
                             <p className="text-gray-600 text-sm">
                               Đăng nhập vào màn hình "phát hành tài liệu" với
-                              tài khoản sau:
+                              tài khoản được RiseGate cung cấp
                             </p>
-                            <ul className="text-sm text-gray-600 list-disc pl-5 mt-2">
+                            {/* <ul className="text-sm text-gray-600 list-disc pl-5 mt-2">
                               <li>
                                 <strong>Tên đăng nhập:</strong> risegate.io
                               </li>
                               <li>
                                 <strong>Mật khẩu:</strong> risegate@2025
                               </li>
-                            </ul>
+                            </ul> */}
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
                           <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">
-                              Chọn tài liệu PDF cần phát hành
+                              Chọn tài liệu cần phát hành
                             </p>
                             <p className="text-gray-600 text-sm">
                               Chọn file tài liệu cần phát hành trên thiết bị của
-                              bạn (PDF, giới hạn 100MB)
+                              bạn (giới hạn 100MB)
                             </p>
                           </div>
                         </div>
@@ -229,7 +229,7 @@ export default function GuidePage() {
                               Tải tài liệu lên Blockchain
                             </p>
                             <p className="text-gray-600 text-sm">
-                              Nhấn vào nút "tải lên PDF"
+                              Nhấn vào nút "tải lên"
                             </p>
                           </div>
                         </div>
@@ -266,11 +266,10 @@ export default function GuidePage() {
                           <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">
-                              Chọn tài liệu PDF cần xác thực
+                              Chọn tài liệu cần xác thực
                             </p>
                             <p className="text-gray-600 text-sm">
-                              Tải file tài liệu cần xác thực (PDF, giới hạn
-                              100MB)
+                              Tải file tài liệu cần xác thực (giới hạn 100MB)
                             </p>
                           </div>
                         </div>
