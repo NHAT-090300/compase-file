@@ -18,7 +18,7 @@ export default function Component() {
   const { user } = useAuth();
 
   return (
-    <main className="relative pb-16">
+    <main className="pb-16">
       <If
         condition={!user}
         Then={

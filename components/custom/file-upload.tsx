@@ -16,11 +16,13 @@ import { FileItem } from "@/types/file";
 interface FileUploadProps {
   onFilesUploaded: (files: FileItem[]) => void;
   mobile?: boolean;
+  disabled?: boolean;
 }
 
 export function FileUpload({
   onFilesUploaded,
   mobile = false,
+  disabled = false,
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -89,7 +91,11 @@ export function FileUpload({
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="lg" className="rounded-full w-14 h-14 shadow-lg">
+            <Button
+              disabled={disabled}
+              size="lg"
+              className="rounded-full w-14 h-14 shadow-lg"
+            >
               <Plus className="w-6 h-6" />
             </Button>
           </DropdownMenuTrigger>

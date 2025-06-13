@@ -15,8 +15,6 @@ export default function ComparePage() {
         </p>
       </div>
 
-      {/* <DocumentTable /> */}
-
       <VerifyPage />
     </main>
   );

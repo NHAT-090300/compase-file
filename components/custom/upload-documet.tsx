@@ -33,6 +33,8 @@ export const UploadDocument = () => {
   };
 
   const handleUpload = async () => {
+    if (uploading) return;
+
     setError(null);
     setUploadSuccess(false);
 
@@ -93,6 +95,8 @@ export const UploadDocument = () => {
     }
   };
   const handleChangeFiles = (newFiles: FileItem[]) => {
+    if (uploading) return;
+
     setError(null);
 
     const maxSize = 100 * 1024 * 1024;
@@ -137,7 +141,10 @@ export const UploadDocument = () => {
             Chọn tệp
           </label>
 
-          <FileUpload onFilesUploaded={handleChangeFiles} />
+          <FileUpload
+            disabled={uploading}
+            onFilesUploaded={handleChangeFiles}
+          />
         </div>
 
         <div className="pr-1.5 max-h-56 overflow-y-auto">

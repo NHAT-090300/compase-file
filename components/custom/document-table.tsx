@@ -21,20 +21,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/context/auth-context";
 import { documentAbi } from "@/lib/abi";
 import { splitText } from "@/lib/utils";
 import { config, documentWalletAddress } from "@/lib/wagmi";
 import { IDocument } from "@/types/document";
 import { isArray, isNumber } from "lodash";
 import { useAccount } from "wagmi";
+import { DeleteModal } from "../modals/delete-modal";
 import { LoginModal } from "../modals/login-modal";
 import { useGlobalModal } from "../modals/modal-provider";
 import { UpdateModal } from "../modals/update-modal";
 import { UploadModal } from "../modals/upload-modal";
 import { VerifyModal } from "../modals/verify-modal";
 import { If } from "./condition";
-import { DeleteModal } from "../modals/delete-modal";
-import { useAuth } from "@/context/auth-context";
 
 const itemsPerPage = 10;
 
@@ -204,12 +204,23 @@ export function DocumentTable() {
   const getDocuments = async (currentPage = 1) => {
     setLoading(true);
     try {
-      console.log("getPagination");
+      const listIds = await readContract(config, {
+        abi: documentAbi,
+        address: documentWalletAddress,
+        account: address,
+        functionName: "getIdByOwner",
+        args: [],
+      });
+
+      const documentIds = isArray(listIds)
+        ? listIds.map((id) => Number(id))
+        : [];
+
       const response = (await readContract(config, {
         abi: documentAbi,
         address: documentWalletAddress,
         functionName: "getPagination",
-        args: [currentPage, itemsPerPage, []],
+        args: [currentPage, itemsPerPage, documentIds],
       })) as [number[], number];
 
       const ids = isArray(response?.[0]) ? response[0] : [];
