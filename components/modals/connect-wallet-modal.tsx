@@ -29,10 +29,6 @@ export const ConnectWalletModal = ({}: Props) => {
           </Button>
         ))}
       </div>
-
-      <Button className="w-full" variant="outline" onClick={closeModal}>
-        Quay lại
-      </Button>
     </div>
   );
 };

@@ -100,11 +100,17 @@ export function FileUpload({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => handleFileSelect(true, false)}>
+            <DropdownMenuItem
+              disabled={disabled}
+              onClick={() => (disabled ? null : handleFileSelect(true, false))}
+            >
               <FileText className="w-4 h-4 mr-2" />
               Tải tệp lên
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleFileSelect(true, true)}>
+            <DropdownMenuItem
+              disabled={disabled}
+              onClick={() => (disabled ? null : handleFileSelect(true, true))}
+            >
               <FolderUp className="w-4 h-4 mr-2" />
               Tải thư mục lên
             </DropdownMenuItem>
@@ -133,17 +139,23 @@ export function FileUpload({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button>
+          <Button disabled={disabled}>
             <Upload className="w-4 h-4 mr-2" />
             Chọn tài liệu
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => handleFileSelect(true, false)}>
+          <DropdownMenuItem
+            disabled={disabled}
+            onClick={() => (disabled ? null : handleFileSelect(true, false))}
+          >
             <FileText className="w-4 h-4 mr-2" />
             Tải tệp lên
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleFileSelect(true, true)}>
+          <DropdownMenuItem
+            disabled={disabled}
+            onClick={() => (disabled ? null : handleFileSelect(true, true))}
+          >
             <FolderUp className="w-4 h-4 mr-2" />
             Tải thư mục lên
           </DropdownMenuItem>
