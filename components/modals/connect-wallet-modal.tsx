@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
-import { useAccount, useConnect } from "wagmi";
+import { useConnect } from "wagmi";
 import { useGlobalModal } from "./modal-provider";
 
 interface Props {}

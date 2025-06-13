@@ -216,6 +216,13 @@ export function DocumentTable() {
         ? listIds.map((id) => Number(id))
         : [];
 
+      if (!documentIds.length) {
+        setPage(1);
+        setTotalData(0);
+        setData([]);
+        return;
+      }
+
       const response = (await readContract(config, {
         abi: documentAbi,
         address: documentWalletAddress,
