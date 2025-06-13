@@ -12,7 +12,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import toast from "react-hot-toast";
-import { generateHashFromFile } from "@/lib/utils";
+import { generateHashFromFile, splitText } from "@/lib/utils";
 import { readContract } from "@wagmi/core";
 import { documentAbi } from "@/lib/abi";
 import { config, documentWalletAddress } from "@/lib/wagmi";
@@ -107,16 +107,15 @@ export const VerifyPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileCheck className="w-5 h-5" />
-            Xác thực File
+            Xác thực tài liệu
           </CardTitle>
           <CardDescription>
-            Chọn file để xác thực tính toàn vẹn bằng cách so sánh mã hash với
-            database
+            Tải file cần xác thực để đối chiếu "Sinh trắc học" với bản gốc
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="verify-upload">Chọn file để xác thực</Label>
+            <Label htmlFor="verify-upload">Chọn tài liệu để xác thực</Label>
             <Input
               id="verify-upload"
               type="file"
@@ -132,7 +131,7 @@ export const VerifyPage = () => {
             disabled={isVerifying || selectedFiles.length === 0}
             className="w-full"
           >
-            {isVerifying ? "Đang xác thực..." : "Xác thực File"}
+            {isVerifying ? "Đang xác thực..." : "Xác thực tài liệu"}
           </Button>
         </CardContent>
       </Card>
@@ -141,10 +140,10 @@ export const VerifyPage = () => {
       {verificationResults.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Kết quả Xác thực</CardTitle>
+            <CardTitle>Kết quả xác thực</CardTitle>
             <CardDescription>
               {verificationResults.filter((r) => r.isVerified).length}/
-              {verificationResults.length} file được xác thực thành công
+              {verificationResults.length} tài liệu được xác thực thành công
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -170,9 +169,9 @@ export const VerifyPage = () => {
                   </div>
 
                   <p className="text-sm text-muted-foreground mb-2">
-                    Hash:{" "}
+                    "Sinh trắc học" của tài liệu:
                     <span className="font-mono">
-                      {result.hash.substring(0, 32)}...
+                      {` ${splitText(result.hash, 5)}`}
                     </span>
                   </p>
 
@@ -196,7 +195,7 @@ export const VerifyPage = () => {
                                   {record.name}
                                 </p>
                                 <p className="text-xs text-green-700">
-                                  File gốc: {record.fileName}
+                                  Tài liệu gốc: {record.fileName}
                                 </p>
                               </div>
                               <Badge variant="outline" className="text-xs">

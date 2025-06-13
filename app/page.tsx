@@ -1,7 +1,6 @@
 "use client";
 
 import { VerifyPage } from "@/components/container/verify-page";
-import { VerifyDocument } from "@/components/custom/verify-document";
 
 export default function ComparePage() {
   return (

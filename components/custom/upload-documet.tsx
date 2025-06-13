@@ -3,15 +3,20 @@ import React, { useState } from "react";
 import { useAccount } from "wagmi";
 
 import { documentAbi } from "@/lib/abi";
-import { generateHashFromMultipleFile } from "@/lib/utils";
+import {
+  generateHashFromFile,
+  generateHashFromMultipleFile,
+} from "@/lib/utils";
 import { config, documentWalletAddress } from "@/lib/wagmi";
 import { FileItem } from "@/types/file";
-import { waitForTransaction, writeContract } from "@wagmi/core";
+import { readContract, waitForTransaction, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { FileUpload } from "./file-upload";
 import { useAuth } from "@/context/auth-context";
+import { isArray } from "lodash";
+import { twMerge } from "tailwind-merge";
 
 export const UploadDocument = () => {
   const { isConnected } = useAccount();
@@ -25,6 +30,24 @@ export const UploadDocument = () => {
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+  };
+
+  const verifyFile = async (fileItem: FileItem) => {
+    const hash = await generateHashFromFile(fileItem.file);
+
+    const response = await readContract(config, {
+      abi: documentAbi,
+      address: documentWalletAddress,
+      functionName: "getIdByHash",
+      args: [hash],
+    });
+
+    const ids = isArray(response) ? response.map((id) => Number(id)) : [];
+
+    fileItem.isError = ids.length > 0;
+    fileItem.hash = hash;
+
+    return fileItem;
   };
 
   const handleUpload = async () => {
@@ -68,10 +91,23 @@ export const UploadDocument = () => {
     try {
       setUploading(true);
 
-      const documents = files.map((item) => item.file);
       const names = Array(files.length).fill(name);
       const documentsName = files.map((file) => file.name);
-      const documentsHash = await generateHashFromMultipleFile(documents);
+      const documents = await Promise.all(files.map(verifyFile));
+      const documentsHash: string[] = [];
+      let errorCnt = 0;
+
+      documents.forEach((item) => {
+        if (item.hash) documentsHash.push(item.hash);
+        if (item.isError) errorCnt += 1;
+      });
+
+      if (errorCnt > 0) {
+        setUploading(false);
+        setUploadSuccess(false);
+        setError(`Có ${errorCnt} tài liệu đã tồn tại trong hệ thống`);
+        return setFiles(documents);
+      }
 
       const hash = await writeContract(config, {
         abi: documentAbi,
@@ -109,10 +145,11 @@ export const UploadDocument = () => {
       documents.push(document);
     });
 
-    setFiles(documents);
+    setFiles((prev) => [...prev, ...documents]);
   };
 
   const onDeleteFile = (id: string) => {
+    setError("");
     setFiles((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -152,7 +189,10 @@ export const UploadDocument = () => {
           {files.map((file, index) => (
             <div
               key={file.id}
-              className="flex items-center gap-3 p-2 mb-1.5 hover:bg-muted rounded-lg group cursor-pointer"
+              className={twMerge(
+                "flex items-center gap-3 border border-gray-200 p-2 mb-1.5 hover:bg-muted rounded-lg group cursor-pointer",
+                file.isError ? "border-red-500" : ""
+              )}
             >
               <div className="flex-shrink-0">
                 <div className="w-6 h-6 lg:w-8 lg:h-8 flex items-center justify-center">

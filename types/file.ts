@@ -6,4 +6,6 @@ export interface FileItem {
   uploadDate: Date;
   url?: string;
   file: File;
+  isError?: boolean;
+  hash?: string;
 }
