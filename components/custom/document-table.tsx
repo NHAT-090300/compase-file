@@ -26,7 +26,7 @@ import { documentAbi } from "@/lib/abi";
 import { splitText } from "@/lib/utils";
 import { config, documentWalletAddress } from "@/lib/wagmi";
 import { IDocument } from "@/types/document";
-import { isArray, isNumber } from "lodash";
+import { add, isArray, isNumber } from "lodash";
 import { useAccount } from "wagmi";
 import { DeleteModal } from "../modals/delete-modal";
 import { LoginModal } from "../modals/login-modal";
@@ -264,7 +264,7 @@ export function DocumentTable() {
 
   React.useEffect(() => {
     getDocuments();
-  }, []);
+  }, [address]);
 
   return (
     <div className="w-full">
